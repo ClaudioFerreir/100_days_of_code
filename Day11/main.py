@@ -1,61 +1,78 @@
 import random
+import os
+
+import art
 
 cards = [11, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10]
 
-#start = input("Do you wanna play a game of Blackjack? Type 'y' or 'n': ").lower()
+start = input("Do you wanna play a game of Blackjack? Type 'y' or 'n': ").lower()
 
-# Initial cards
-player_cards = random.choices(cards, k=2)
-# print(player_cards)
+while start == 'y':
 
-player_points = 0
+    print("\n" * 15)
+    print(art.logo)
 
-# Player's turn
-for card in player_cards:
-    player_points += card
-print(f"the player has {player_points} points")
+    # Player initial cards
+    player_cards = random.choices(cards, k=2)
+    # Player's points
+    player_points = sum(player_cards)
 
-# Computer_points
-computer_points = random.choice(cards)
+    # Computer initial cards
+    computer_cards = [random.choice(cards)]
+    # Computer's points
+    computer_points = computer_cards[0]
 
-# Computer's round
-def computer_round(points, player):
-    new_card = random.choice(cards)
-    total_points = points + new_card
-    print(total_points)
-    if total_points > 21:
-        print("You Win!!!")
-    elif total_points > player:
-        print("You Lose!!!")
-    elif total_points == player:
-        print("You Draw!!!")
-    else:
-        computer_round(total_points, player)
-    return total_points
+    # Final computer's turn message
+    def final_computer_round(player_f_hand, player_f_score, computer_f_hand, computer_f_score):
+        print(f"Your final hand: {player_f_hand}, final score: {player_f_score}")
+        print(f"Computer's final hand: {computer_f_hand}, final score: {computer_f_score}")
 
-# player round
-def player_round(points):
-    if points == 21:
-        print("You Win!!!")
-    elif points > 21:
-        print("You Lose!!!")
-    else:
-        should_continue = input("Type 'y' to get another card, type 'n' to pass: ")
-        if should_continue == 'y':
-            new_card = random.choice(cards)
-            print(new_card)
-            points += new_card
-            print(points)
-            player_round(points)
-        elif should_continue == 'n':
-            computer_round(computer_points, points)
-    return points
-#
-player_round(player_points)
+    # Computer's turn
+    def computer_round(points, player, player_hand):
+        computer_hand = [points]
+        new_card = random.choice(cards)
+        computer_hand.append(new_card)
+        total_points = points + new_card
+
+        if total_points > 21:
+            final_computer_round(player_hand, player, computer_hand, total_points)
+            print("Opponent went over. You win!!!")
+        elif total_points == 21:
+            final_computer_round(player_hand, player, computer_hand, total_points)
+            print("Lose, opponent has Blackjack!!!")
+        elif total_points > player:
+            final_computer_round(player_hand, player, computer_hand, total_points)
+            print("You Lose!!!")
+        elif total_points == player:
+            final_computer_round(player_hand, player, computer_hand, total_points)
+            print("Draw!!!")
+        else:
+            computer_round(total_points, player, player_cards)
 
 
+    # player's turn
+    def player_round(points):
+
+        print(f"Your cards: {player_cards}, current score: {points}")
+        print(f"Computer's first card: {computer_points}")
+
+        if points == 21:
+            print("You Win!!!")
+        elif points > 21:
+            print("You went over. You lose!")
+        else:
+            should_continue = input("Type 'y' to get another card, type 'n' to pass: ")
+            if should_continue == 'y':
+                new_card = random.choice(cards)
+                points += new_card
+                player_cards.append(new_card)
+                player_round(points)
+            elif should_continue == 'n':
+                computer_round(computer_points, points, player_cards)
+
+    player_round(player_points)
+
+    start = input("Do you wanna play a game of Blackjack? Type 'y' or 'n': ").lower()
 
 
-# computer_cards = random.choices(cards, k=2)
-#
-# print(your_cards, computer_cards[0])
+
