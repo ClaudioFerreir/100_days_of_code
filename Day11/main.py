@@ -1,5 +1,4 @@
 import random
-import os
 
 import art
 
@@ -59,7 +58,13 @@ while start == 'y':
         if points == 21:
             print("You Win!!!")
         elif points > 21:
-            print("You went over. You lose!")
+            if 11 in player_cards:
+                index = player_cards.index(11)
+                player_cards[index] = 1
+                points = sum(player_cards)
+                player_round(points)
+            else:
+                print("You went over. You lose!")
         else:
             should_continue = input("Type 'y' to get another card, type 'n' to pass: ")
             if should_continue == 'y':
